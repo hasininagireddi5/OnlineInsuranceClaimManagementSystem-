@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Claims</title>
+    <style>
+        body{
+            font-family: Arial;
+            background:#f4f6f9;
+            margin:0;
+        }
+
+        header{
+            background:#2c3e50;
+            color:white;
+            padding:15px;
+            text-align:center;
+        }
+
+        .container{
+            width:80%;
+            margin:30px auto;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            background:white;
+            box-shadow:0 0 10px rgba(0,0,0,0.2);
+        }
+
+        th, td{
+            padding:12px;
+            text-align:center;
+            border-bottom:1px solid #ddd;
+        }
+
+        th{
+            background:#34495e;
+            color:white;
+        }
+
+        tr:hover{
+            background:#f1f1f1;
+        }
+
+        .pending{ color:orange; font-weight:bold; }
+        .approved{ color:green; font-weight:bold; }
+        .rejected{ color:red; font-weight:bold; }
+
+        .empty{
+            text-align:center;
+            margin-top:20px;
+            font-size:18px;
+            color:#555;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h2>My Claims</h2>
+</header>
+
+<div class="container">
+    <table id="claimsTable">
+        <tr>
+            <th>Policy</th>
+            <th>Amount</th>
+            <th>Reason</th>
+            <th>Status</th>
+        </tr>
+    </table>
+
+    <div class="empty" id="emptyMsg"></div>
+</div>
+
+<script>
+let claims = JSON.parse(localStorage.getItem("claims")) || [];
+
+let table = document.getElementById("claimsTable");
+let emptyMsg = document.getElementById("emptyMsg");
+
+if(claims.length === 0){
+    emptyMsg.innerHTML = "No claims submitted yet.";
+}else{
+    claims.forEach(c => {
+        let row = table.insertRow();
+
+        row.insertCell(0).innerHTML = c.policy;
+        row.insertCell(1).innerHTML = "₹ " + c.amount;
+        row.insertCell(2).innerHTML = c.reason;
+
+        let statusCell = row.insertCell(3);
+        statusCell.innerHTML = c.status;
+
+        if(c.status === "Pending") statusCell.className = "pending";
+        if(c.status === "Approved") statusCell.className = "approved";
+        if(c.status === "Rejected") statusCell.className = "rejected";
+    });
+}
+</script>
+
+</body>
+</html>

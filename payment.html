@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Payments</title>
+
+<style>
+body{
+    font-family: Arial;
+    background:#f4f6f9;
+    margin:0;
+}
+
+header{
+    background:#2c3e50;
+    color:white;
+    padding:15px;
+    text-align:center;
+}
+
+.container{
+    width:80%;
+    margin:30px auto;
+    text-align:center;
+}
+
+.card{
+    background:white;
+    padding:20px;
+    margin:20px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+.approved{
+    color:green;
+    font-weight:bold;
+}
+
+.pending{
+    color:orange;
+    font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>Payments</h2>
+</header>
+
+<div class="container" id="paymentContainer">
+</div>
+
+<script>
+
+let claims = JSON.parse(localStorage.getItem("claims")) || [];
+let container = document.getElementById("paymentContainer");
+
+if(claims.length === 0){
+    container.innerHTML = "<h3>No claims available.</h3>";
+}else{
+
+    let approvedClaims = claims.filter(c => c.status === "Approved");
+
+    if(approvedClaims.length === 0){
+        container.innerHTML = "<h3 class='pending'>No approved claims yet.</h3>";
+    }else{
+
+        approvedClaims.forEach(c => {
+
+            let div = document.createElement("div");
+            div.className = "card";
+
+            div.innerHTML = `
+                <h3 class="approved">Payment Processed</h3>
+                <p><strong>Policy:</strong> ${c.policy}</p>
+                <p><strong>Amount Paid:</strong> ₹ ${c.amount}</p>
+                <p><strong>Payment Mode:</strong> Bank Transfer</p>
+                <p><strong>Status:</strong> Approved</p>
+            `;
+
+            container.appendChild(div);
+        });
+
+    }
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insurance SQL Manager - Full 100 Scenarios</title>
+    
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; padding: 20px; background-color: #f4f7f9; color: #333; }
+        header { text-align: center; margin-bottom: 30px; }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 8px;
+            max-width: 1000px;
+            margin: 0 auto 30px auto;
+        }
+
+        button {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+
+        button:hover { background-color: #2ecc71; transform: scale(1.1); }
+
+        .display-box {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        pre {
+            background: #272822;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            overflow-x: auto;
+            border-left: 5px solid #3498db;
+        }
+
+        .table-container { margin-top: 20px; overflow-x: auto; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
+        table, th, td { border: 1px solid #ddd; }
+        th { background-color: #3498db; color: white; padding: 12px; text-align: left; }
+        td { padding: 10px; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+
+        .result-label { font-weight: bold; color: #2c3e50; text-transform: uppercase; font-size: 0.8rem; display: block; margin-top: 15px; }
+        
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: repeat(5, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Online Insurance Claim Management System</h1>
+        
+    </header>
+
+    <div id="button-container" class="grid-container"></div>
+
+    <div id="display-area" class="display-box">
+        <h2 id="q-title" style="margin-top:0; color:#3498db;">Select a Query</h2>
+        
+        <span class="result-label">Question:</span>
+        <div id="q-text">Click a button to load the logic.</div>
+
+        <span class="result-label">SQL:</span>
+        <pre><code id="q-sql">-- Query will appear here</code></pre>
+
+        <span class="result-label">Result Preview (Filtered Data):</span>
+        <div class="table-container" id="table-output">
+            <p style="color:#999 italic;">Select a scenario to see filtered results...</p>
+        </div>
+    </div>
+
+    <script>
+        const mockData = {
+            "Customer": [
+                { ID: 1, Name: "Amit Sharma", Email: "amit@example.com", City: "Delhi" },
+                { ID: 2, Name: "Priya Singh", Email: "priya@example.com", City: "Mumbai" },
+                { ID: 3, Name: "Rahul Verma", Email: "rahul@example.com", City: "Pune" }
+            ],
+            "Policy": [
+                { Policy_ID: 101, Type: "Health", Premium: 12000, Status: "Active" },
+                { Policy_ID: 102, Type: "Life", Premium: 8500, Status: "Active" },
+                { Policy_ID: 103, Type: "Auto", Premium: 5000, Status: "Expired" }
+            ],
+            "Claim": [
+                { Claim_ID: 501, Policy_ID: 101, Amount: 50000, Status: "Pending" },
+                { Claim_ID: 502, Policy_ID: 102, Amount: 15000, Status: "Approved" },
+                { Claim_ID: 503, Policy_ID: 103, Amount: 2000, Status: "Rejected" }
+            ],
+            "Payment": [
+                { Pay_ID: 1, Method: "UPI", Amount: 12000, Date: "2024-01-01" },
+                { Pay_ID: 2, Method: "Card", Amount: 5000, Date: "2024-02-15" }
+            ],
+            "Agent": [
+                { Agent_ID: 1, Name: "Suresh", Branch: "Mumbai", Target: 100 },
+                { Agent_ID: 2, Name: "Anjali", Branch: "Delhi", Target: 80 }
+            ]
+        };
+
+        // ... (The 100 queries array stays the same as your previous version)
+        const queryData = [
+            { id: 1, question: "List all customers.", sql: "SELECT * FROM Customer;", table: "Customer" },
+            { id: 2, question: "List all active policies.", sql: "SELECT * FROM Policy WHERE Status = 'Active';", table: "Policy" },
+            { id: 3, question: "Show total claims pending.", sql: "SELECT * FROM Claim WHERE Status = 'Pending';", table: "Claim" },
+            { id: 4, question: "Find customers from Delhi.", sql: "SELECT * FROM Customer WHERE City = 'Delhi';", table: "Customer" },
+            { id: 5, question: "Show premiums > 10000.", sql: "SELECT * FROM Policy WHERE Premium > 10000;", table: "Policy" },
+            { id: 6, question: "List payments via UPI.", sql: "SELECT * FROM Payment WHERE Method = 'UPI';", table: "Payment" },
+            { id: 7, question: "Get names and emails of customers.", sql: "SELECT Name, Email FROM Customer;", table: "Customer" },
+            { id: 8, question: "Find policy with ID 102.", sql: "SELECT * FROM Policy WHERE Policy_ID = 102;", table: "Policy" },
+            { id: 9, question: "Show all approved claims.", sql: "SELECT * FROM Claim WHERE Status = 'Approved';", table: "Claim" },
+            { id: 10, question: "Total sum of all premiums.", sql: "SELECT SUM(Premium) FROM Policy;", table: "Policy" },
+            { id: 11, question: "Average claim amount.", sql: "SELECT AVG(Amount) FROM Claim;", table: "Claim" },
+            { id: 12, question: "List agents in Mumbai.", sql: "SELECT * FROM Agent WHERE Branch = 'Mumbai';", table: "Agent" },
+            { id: 13, question: "Find claims > 20000.", sql: "SELECT * FROM Claim WHERE Amount > 20000;", table: "Claim" },
+            { id: 14, question: "Show all expired policies.", sql: "SELECT * FROM Policy WHERE Status = 'Expired';", table: "Policy" },
+            { id: 15, question: "Delete rejected claims.", sql: "DELETE FROM Claim WHERE Status = 'Rejected';", table: "Claim" },
+            { id: 16, question: "Update customer city to Pune.", sql: "UPDATE Customer SET City = 'Pune' WHERE ID = 1;", table: "Customer" },
+            { id: 17, question: "Find unique policy types.", sql: "SELECT DISTINCT Type FROM Policy;", table: "Policy" },
+            { id: 18, question: "Count total agents.", sql: "SELECT COUNT(*) FROM Agent;", table: "Agent" },
+            { id: 19, question: "Show payments after Jan 2024.", sql: "SELECT * FROM Payment WHERE Date > '2024-01-01';", table: "Payment" },
+            { id: 20, question: "List customers whose name starts with 'P'.", sql: "SELECT * FROM Customer WHERE Name LIKE 'P%';", table: "Customer" },
+            { id: 21, question: "Join Customer and Policy.", sql: "SELECT C.Name, P.Type FROM Customer C JOIN Policy P ON C.ID = P.Policy_ID;", table: "Customer" },
+            { id: 22, question: "Show max premium amount.", sql: "SELECT MAX(Premium) FROM Policy;", table: "Policy" },
+            { id: 23, question: "Show min claim amount.", sql: "SELECT MIN(Amount) FROM Claim;", table: "Claim" },
+            { id: 24, question: "Group claims by status.", sql: "SELECT Status, COUNT(*) FROM Claim GROUP BY Status;", table: "Claim" },
+            { id: 25, question: "Sort agents by target.", sql: "SELECT * FROM Agent ORDER BY Target DESC;", table: "Agent" },
+            { id: 26, question: "Find policy 101 status.", sql: "SELECT Status FROM Policy WHERE Policy_ID = 101;", table: "Policy" },
+            { id: 27, question: "Total payment amount.", sql: "SELECT SUM(Amount) FROM Payment;", table: "Payment" },
+            { id: 28, question: "List customers from Mumbai.", sql: "SELECT * FROM Customer WHERE City = 'Mumbai';", table: "Customer" },
+            { id: 29, question: "Policies with 'Life' type.", sql: "SELECT * FROM Policy WHERE Type = 'Life';", table: "Policy" },
+            { id: 30, question: "Count claims for policy 101.", sql: "SELECT COUNT(*) FROM Claim WHERE Policy_ID = 101;", table: "Claim" },
+            { id: 31, question: "Find agents with target > 90.", sql: "SELECT * FROM Agent WHERE Target > 90;", table: "Agent" },
+            { id: 32, question: "Show all health policies.", sql: "SELECT * FROM Policy WHERE Type = 'Health';", table: "Policy" },
+            { id: 33, question: "List payments via Card.", sql: "SELECT * FROM Payment WHERE Method = 'Card';", table: "Payment" },
+            { id: 34, question: "Get customer count by city.", sql: "SELECT City, COUNT(*) FROM Customer GROUP BY City;", table: "Customer" },
+            { id: 35, question: "Find payments exactly 12000.", sql: "SELECT * FROM Payment WHERE Amount = 12000;", table: "Payment" },
+            { id: 36, question: "Show all rejected claims.", sql: "SELECT * FROM Claim WHERE Status = 'Rejected';", table: "Claim" },
+            { id: 37, question: "Search customer by email.", sql: "SELECT * FROM Customer WHERE Email = 'rahul@example.com';", table: "Customer" },
+            { id: 38, question: "Sum of premium by status.", sql: "SELECT Status, SUM(Premium) FROM Policy GROUP BY Status;", table: "Policy" },
+            { id: 39, question: "List agents not in Delhi.", sql: "SELECT * FROM Agent WHERE Branch != 'Delhi';", table: "Agent" },
+            { id: 40, question: "Find claims for policy 102.", sql: "SELECT * FROM Claim WHERE Policy_ID = 102;", table: "Claim" },
+            { id: 41, question: "Update premium for Health.", sql: "UPDATE Policy SET Premium = 15000 WHERE Type = 'Health';", table: "Policy" },
+            { id: 42, question: "Delete expired policies.", sql: "DELETE FROM Policy WHERE Status = 'Expired';", table: "Policy" },
+            { id: 43, question: "Find customers ending in 'Singh'.", sql: "SELECT * FROM Customer WHERE Name LIKE '%Singh';", table: "Customer" },
+            { id: 44, question: "Group policies by type.", sql: "SELECT Type, COUNT(*) FROM Policy GROUP BY Type;", table: "Policy" },
+            { id: 45, question: "Show agents in Delhi branch.", sql: "SELECT * FROM Agent WHERE Branch = 'Delhi';", table: "Agent" },
+            { id: 46, question: "Find claims between 5000 and 20000.", sql: "SELECT * FROM Claim WHERE Amount BETWEEN 5000 AND 20000;", table: "Claim" },
+            { id: 47, question: "Count payments per method.", sql: "SELECT Method, COUNT(*) FROM Payment GROUP BY Method;", table: "Payment" },
+            { id: 48, question: "Show policies sorted by ID.", sql: "SELECT * FROM Policy ORDER BY Policy_ID ASC;", table: "Policy" },
+            { id: 49, question: "Find customer with ID 3.", sql: "SELECT * FROM Customer WHERE ID = 3;", table: "Customer" },
+            { id: 50, question: "Show average agent target.", sql: "SELECT AVG(Target) FROM Agent;", table: "Agent" },
+            { id: 51, question: "List auto policies.", sql: "SELECT * FROM Policy WHERE Type = 'Auto';", table: "Policy" },
+            { id: 52, question: "Find payment with Pay_ID 1.", sql: "SELECT * FROM Payment WHERE Pay_ID = 1;", table: "Payment" },
+            { id: 53, question: "Show all pending claims.", sql: "SELECT * FROM Claim WHERE Status = 'Pending';", table: "Claim" },
+            { id: 54, question: "Join Claim and Policy.", sql: "SELECT C.Claim_ID, P.Type FROM Claim C JOIN Policy P ON C.Policy_ID = P.Policy_ID;", table: "Claim" },
+            { id: 55, question: "Find customers in Pune.", sql: "SELECT * FROM Customer WHERE City = 'Pune';", table: "Customer" },
+            { id: 56, question: "Show premiums < 6000.", sql: "SELECT * FROM Policy WHERE Premium < 6000;", table: "Policy" },
+            { id: 57, question: "Count total payments.", sql: "SELECT COUNT(*) FROM Payment;", table: "Payment" },
+            { id: 58, question: "Update agent target.", sql: "UPDATE Agent SET Target = 110 WHERE Agent_ID = 1;", table: "Agent" },
+            { id: 59, question: "Find policies with 'Active' status.", sql: "SELECT * FROM Policy WHERE Status = 'Active';", table: "Policy" },
+            { id: 60, question: "List agents alphabetically.", sql: "SELECT * FROM Agent ORDER BY Name ASC;", table: "Agent" },
+            { id: 61, question: "Total claim amount approved.", sql: "SELECT SUM(Amount) FROM Claim WHERE Status = 'Approved';", table: "Claim" },
+            { id: 62, question: "Find payments > 1000.", sql: "SELECT * FROM Payment WHERE Amount > 1000;", table: "Payment" },
+            { id: 63, question: "Show policy 103 details.", sql: "SELECT * FROM Policy WHERE Policy_ID = 103;", table: "Policy" },
+            { id: 64, question: "Find customers with 'amit' in email.", sql: "SELECT * FROM Customer WHERE Email LIKE '%amit%';", table: "Customer" },
+            { id: 65, question: "Count policies by status.", sql: "SELECT Status, COUNT(*) FROM Policy GROUP BY Status;", table: "Policy" },
+            { id: 66, question: "List agents target above average.", sql: "SELECT * FROM Agent WHERE Target > (SELECT AVG(Target) FROM Agent);", table: "Agent" },
+            { id: 67, question: "Find claims for policy 103.", sql: "SELECT * FROM Claim WHERE Policy_ID = 103;", table: "Claim" },
+            { id: 68, question: "Show all life policies.", sql: "SELECT * FROM Policy WHERE Type = 'Life';", table: "Policy" },
+            { id: 69, question: "Show min agent target.", sql: "SELECT MIN(Target) FROM Agent;", table: "Agent" },
+            { id: 70, question: "Join Agent and Branch info.", sql: "SELECT Name, Branch FROM Agent;", table: "Agent" },
+            { id: 71, question: "Show premium sum for active.", sql: "SELECT SUM(Premium) FROM Policy WHERE Status = 'Active';", table: "Policy" },
+            { id: 72, question: "Find customers not from Delhi.", sql: "SELECT * FROM Customer WHERE City != 'Delhi';", table: "Customer" },
+            { id: 73, question: "Search claim by ID 502.", sql: "SELECT * FROM Claim WHERE Claim_ID = 502;", table: "Claim" },
+            { id: 74, question: "List all payment methods.", sql: "SELECT DISTINCT Method FROM Payment;", table: "Payment" },
+            { id: 75, question: "Show policy sorted by premium.", sql: "SELECT * FROM Policy ORDER BY Premium DESC;", table: "Policy" },
+            { id: 76, question: "Find agents in Mumbai or Delhi.", sql: "SELECT * FROM Agent WHERE Branch IN ('Mumbai', 'Delhi');", table: "Agent" },
+            { id: 77, question: "Show count of all customers.", sql: "SELECT COUNT(*) FROM Customer;", table: "Customer" },
+            { id: 78, question: "Find policies between 8000-15000.", sql: "SELECT * FROM Policy WHERE Premium BETWEEN 8000 AND 15000;", table: "Policy" },
+            { id: 79, question: "Show claims for specific amount.", sql: "SELECT * FROM Claim WHERE Amount = 15000;", table: "Claim" },
+            { id: 80, question: "Update Claim status to Approved.", sql: "UPDATE Claim SET Status = 'Approved' WHERE Claim_ID = 501;", table: "Claim" },
+            { id: 81, question: "Delete payment ID 2.", sql: "DELETE FROM Payment WHERE Pay_ID = 2;", table: "Payment" },
+            { id: 82, question: "Find health policies premium sum.", sql: "SELECT SUM(Premium) FROM Policy WHERE Type = 'Health';", table: "Policy" },
+            { id: 83, question: "List customers by name descending.", sql: "SELECT * FROM Customer ORDER BY Name DESC;", table: "Customer" },
+            { id: 84, question: "Find claims not rejected.", sql: "SELECT * FROM Claim WHERE Status != 'Rejected';", table: "Claim" },
+            { id: 85, question: "Count agents in Mumbai.", sql: "SELECT COUNT(*) FROM Agent WHERE Branch = 'Mumbai';", table: "Agent" },
+            { id: 86, question: "Show all policy details.", sql: "SELECT * FROM Policy;", table: "Policy" },
+            { id: 87, question: "Search agent by name Suresh.", sql: "SELECT * FROM Agent WHERE Name = 'Suresh';", table: "Agent" },
+            { id: 88, question: "Find payments < 10000.", sql: "SELECT * FROM Payment WHERE Amount < 10000;", table: "Payment" },
+            { id: 89, question: "List all auto secure policies.", sql: "SELECT * FROM Policy WHERE Type = 'Auto';", table: "Policy" },
+            { id: 90, question: "Count approved claims total.", sql: "SELECT COUNT(*) FROM Claim WHERE Status = 'Approved';", table: "Claim" },
+            { id: 91, question: "Find customer with ID 2.", sql: "SELECT * FROM Customer WHERE ID = 2;", table: "Customer" },
+            { id: 92, question: "Show policy status for active.", sql: "SELECT * FROM Policy WHERE Status = 'Active';", table: "Policy" },
+            { id: 93, question: "Average premium for health.", sql: "SELECT AVG(Premium) FROM Policy WHERE Type = 'Health';", table: "Policy" },
+            { id: 94, question: "Find agent target exactly 80.", sql: "SELECT * FROM Agent WHERE Target = 80;", table: "Agent" },
+            { id: 95, question: "List claims for policy 101 status.", sql: "SELECT * FROM Claim WHERE Policy_ID = 101;", table: "Claim" },
+            { id: 96, question: "Show all payment data.", sql: "SELECT * FROM Payment;", table: "Payment" },
+            { id: 97, question: "Find city for Priya Singh.", sql: "SELECT City FROM Customer WHERE Name = 'Priya Singh';", table: "Customer" },
+            { id: 98, question: "Show policy 102 premium.", sql: "SELECT Premium FROM Policy WHERE Policy_ID = 102;", table: "Policy" },
+            { id: 99, question: "Search customer by city Mumbai.", sql: "SELECT * FROM Customer WHERE City = 'Mumbai';", table: "Customer" },
+            { id: 100, question: "List all agent IDs.", sql: "SELECT Agent_ID FROM Agent;", table: "Agent" }
+        ];
+
+        const container = document.getElementById('button-container');
+
+        queryData.forEach(item => {
+            const btn = document.createElement('button');
+            btn.innerText = item.id;
+            btn.onclick = () => {
+                document.getElementById('q-title').innerText = "Scenario #" + item.id;
+                document.getElementById('q-text').innerText = item.question;
+                document.getElementById('q-sql').innerText = item.sql;
+                
+                // NEW: Pass the item object so we can filter based on the question!
+                generateTable(item);
+                
+                document.getElementById('display-area').scrollIntoView({ behavior: 'smooth' });
+            };
+            container.appendChild(btn);
+        });
+
+  function generateTable(queryObj) {
+
+    const output = document.getElementById('table-output');
+    const tableName = queryObj.table;
+
+    let data = [...mockData[tableName]];
+    const sql = queryObj.sql.toLowerCase();
+
+    // -------- CITY FILTER --------
+    if (sql.includes("city = 'delhi'"))
+        data = data.filter(d => d.City === "Delhi");
+
+    if (sql.includes("city = 'mumbai'"))
+        data = data.filter(d => d.City === "Mumbai");
+
+    if (sql.includes("city = 'pune'"))
+        data = data.filter(d => d.City === "Pune");
+
+    // -------- NAME LIKE FILTER --------
+    if (sql.includes("name like 'p%'"))
+        data = data.filter(d => d.Name && d.Name.startsWith("P"));
+
+    if (sql.includes("name like 'a%'"))
+        data = data.filter(d => d.Name && d.Name.startsWith("A"));
+
+    if (sql.includes("name like '%singh'"))
+        data = data.filter(d => d.Name && d.Name.endsWith("Singh"));
+
+    // -------- STATUS FILTER --------
+    if (sql.includes("status = 'active'"))
+        data = data.filter(d => d.Status === "Active");
+
+    if (sql.includes("status = 'expired'"))
+        data = data.filter(d => d.Status === "Expired");
+
+    if (sql.includes("status = 'pending'"))
+        data = data.filter(d => d.Status === "Pending");
+
+    if (sql.includes("status = 'approved'"))
+        data = data.filter(d => d.Status === "Approved");
+
+    if (sql.includes("status = 'rejected'"))
+        data = data.filter(d => d.Status === "Rejected");
+
+    // -------- PREMIUM FILTER --------
+    if (sql.includes("premium > 10000"))
+        data = data.filter(d => d.Premium > 10000);
+
+    if (sql.includes("premium < 6000"))
+        data = data.filter(d => d.Premium < 6000);
+
+    // -------- CLAIM AMOUNT --------
+    if (sql.includes("amount > 20000"))
+        data = data.filter(d => d.Amount > 20000);
+
+    if (sql.includes("between 5000 and 20000"))
+        data = data.filter(d => d.Amount >= 5000 && d.Amount <= 20000);
+
+    // -------- PAYMENT METHOD --------
+    if (sql.includes("method = 'upi'"))
+        data = data.filter(d => d.Method === "UPI");
+
+    if (sql.includes("method = 'card'"))
+        data = data.filter(d => d.Method === "Card");
+
+    // -------- POLICY ID FILTER --------
+    if (sql.includes("policy_id = 101"))
+        data = data.filter(d => d.Policy_ID === 101);
+
+    if (sql.includes("policy_id = 102"))
+        data = data.filter(d => d.Policy_ID === 102);
+
+    // -------- CLAIM ID --------
+    if (sql.includes("claim_id = 502"))
+        data = data.filter(d => d.Claim_ID === 502);
+
+    // -------- AGENT NAME --------
+    if (sql.includes("name = 'suresh'"))
+        data = data.filter(d => d.Name === "Suresh");
+
+    // -------- COUNT --------
+    if (sql.includes("count(")) {
+        output.innerHTML = `<p><b>Total Count:</b> ${data.length}</p>`;
+        return;
+    }
+
+    // -------- SUM --------
+    if (sql.includes("sum(")) {
+
+        let field = "";
+
+        if (sql.includes("premium")) field = "Premium";
+        if (sql.includes("amount")) field = "Amount";
+        if (sql.includes("target")) field = "Target";
+
+        let sum = data.reduce((s, r) => s + (r[field] || 0), 0);
+
+        output.innerHTML = `<p><b>SUM Result:</b> ${sum}</p>`;
+        return;
+    }
+
+    // -------- AVG --------
+    if (sql.includes("avg(")) {
+
+        let field = "";
+
+        if (sql.includes("premium")) field = "Premium";
+        if (sql.includes("amount")) field = "Amount";
+        if (sql.includes("target")) field = "Target";
+
+        let sum = data.reduce((s, r) => s + (r[field] || 0), 0);
+        let avg = sum / data.length;
+
+        output.innerHTML = `<p><b>Average Result:</b> ${avg.toFixed(2)}</p>`;
+        return;
+    }
+
+    // -------- MIN --------
+    if (sql.includes("min(")) {
+
+        let field = sql.includes("amount") ? "Amount" : "Target";
+
+        let min = Math.min(...data.map(d => d[field]));
+
+        output.innerHTML = `<p><b>Minimum Value:</b> ${min}</p>`;
+        return;
+    }
+
+    // -------- MAX --------
+    if (sql.includes("max(")) {
+
+        let field = sql.includes("premium") ? "Premium" : "Amount";
+
+        let max = Math.max(...data.map(d => d[field]));
+
+        output.innerHTML = `<p><b>Maximum Value:</b> ${max}</p>`;
+        return;
+    }
+
+    // -------- EMPTY RESULT --------
+    if (!data || data.length === 0) {
+        output.innerHTML = "<p style='color:red;'>0 Rows Found</p>";
+        return;
+    }
+
+    // -------- BUILD TABLE --------
+    let html = `<table><thead><tr>`;
+
+    Object.keys(data[0]).forEach(key => html += `<th>${key}</th>`);
+
+    html += `</tr></thead><tbody>`;
+
+    data.forEach(row => {
+        html += `<tr>`;
+        Object.values(row).forEach(val => html += `<td>${val}</td>`);
+        html += `</tr>`;
+    });
+
+    html += `</tbody></table>`;
+
+    output.innerHTML = html;
+}
+    </script>
+</body>
+</html>

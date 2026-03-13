@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Policies</title>
+
+<style>
+body{
+    font-family: Arial;
+    background:#f4f6f9;
+    margin:0;
+}
+
+.header{
+    background:#2c3e50;
+    color:white;
+    padding:15px;
+    text-align:center;
+}
+
+.container{
+    padding:20px;
+}
+
+table{
+    width:100%;
+    border-collapse: collapse;
+    background:white;
+}
+
+th, td{
+    padding:10px;
+    border:1px solid #ddd;
+    text-align:center;
+}
+
+th{
+    background:#3498db;
+    color:white;
+}
+
+button{
+    margin-top:15px;
+    padding:8px 12px;
+    background:#e74c3c;
+    color:white;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+    My Insurance Policies
+</div>
+
+<div class="container">
+
+<table>
+<tr>
+    <th>Policy ID</th>
+    <th>Policy Name</th>
+    <th>Start Date</th>
+    <th>Premium</th>
+</tr>
+
+<tr>
+    <td>P101</td>
+    <td>Health Insurance</td>
+    <td>01-01-2024</td>
+    <td>₹10,000</td>
+</tr>
+
+<tr>
+    <td>P102</td>
+    <td>Vehicle Insurance</td>
+    <td>15-03-2024</td>
+    <td>₹8,000</td>
+</tr>
+
+</table>
+
+<button onclick="goBack()">Back to Dashboard</button>
+
+</div>
+
+<script>
+function goBack(){
+    window.location.href="dashboard.html";
+}
+</script>
+
+</body>
+</html>

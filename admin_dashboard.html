@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+
+<style>
+body{
+    font-family: Arial;
+    margin:0;
+    background:#f4f6f9;
+}
+
+header{
+    background:#2c3e50;
+    color:white;
+    padding:15px;
+    text-align:center;
+    position:relative;
+}
+
+.logout{
+    position:absolute;
+    right:20px;
+    top:15px;
+    background:#e74c3c;
+    border:none;
+    padding:6px 12px;
+    color:white;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+.logout:hover{
+    background:#c0392b;
+}
+
+.nav{
+    text-align:center;
+    margin-top:15px;
+}
+
+.nav button{
+    background:#3498db;
+    color:white;
+    padding:10px 15px;
+    margin:5px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.nav button:hover{
+    background:#2980b9;
+}
+
+.container{
+    width:90%;
+    margin:20px auto;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+th, td{
+    padding:12px;
+    text-align:center;
+    border-bottom:1px solid #ddd;
+}
+
+th{
+    background:#34495e;
+    color:white;
+}
+
+button{
+    padding:6px 12px;
+    border:none;
+    border-radius:5px;
+    cursor:pointer;
+    color:white;
+}
+
+.approve{
+    background:green;
+}
+
+.reject{
+    background:red;
+}
+
+.status-approved{
+    color:green;
+    font-weight:bold;
+}
+
+.status-rejected{
+    color:red;
+    font-weight:bold;
+}
+
+.status-pending{
+    color:orange;
+    font-weight:bold;
+}
+
+.noData{
+    text-align:center;
+    margin-top:20px;
+    font-size:18px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>Admin Dashboard</h2>
+    <button class="logout" onclick="logout()">Logout</button>
+</header>
+
+<!-- Navigation Buttons -->
+<div class="nav">
+    <button onclick="location.href='queries.html'">SQL Queries</button>
+</div>
+
+<div class="container">
+
+<table id="claimsTable">
+    <tr>
+        <th>Policy</th>
+        <th>Amount</th>
+        <th>Reason</th>
+        <th>Status</th>
+        <th>Action</th>
+    </tr>
+</table>
+
+<div class="noData" id="noDataMsg"></div>
+
+</div>
+
+<script>
+
+let claims = JSON.parse(localStorage.getItem("claims")) || [];
+let table = document.getElementById("claimsTable");
+let noDataMsg = document.getElementById("noDataMsg");
+
+if(claims.length === 0){
+    noDataMsg.innerHTML = "No claims submitted yet.";
+}else{
+
+    claims.forEach((c,index) => {
+
+        let row = table.insertRow();
+
+        row.insertCell(0).innerHTML = c.policy;
+        row.insertCell(1).innerHTML = "₹ " + c.amount;
+        row.insertCell(2).innerHTML = c.reason;
+
+        // STATUS COLOR
+        let statusCell = row.insertCell(3);
+        statusCell.innerHTML = c.status;
+
+        if(c.status === "Approved") statusCell.className="status-approved";
+        if(c.status === "Rejected") statusCell.className="status-rejected";
+        if(c.status === "Pending") statusCell.className="status-pending";
+
+        let actionCell = row.insertCell(4);
+
+        if(c.status === "Pending"){
+            actionCell.innerHTML = `
+                <button class="approve" onclick="approveClaim(${index})">Approve</button>
+                <button class="reject" onclick="rejectClaim(${index})">Reject</button>
+            `;
+        }else{
+            actionCell.innerHTML = "-";
+        }
+
+    });
+
+}
+
+function approveClaim(index){
+    claims[index].status = "Approved";
+    localStorage.setItem("claims", JSON.stringify(claims));
+    alert("Claim Approved!");
+    location.reload();
+}
+
+function rejectClaim(index){
+    claims[index].status = "Rejected";
+    localStorage.setItem("claims", JSON.stringify(claims));
+    alert("Claim Rejected!");
+    location.reload();
+}
+
+function logout(){
+    window.location.href="login.html";
+}
+
+</script>
+
+</body>
+</html>
